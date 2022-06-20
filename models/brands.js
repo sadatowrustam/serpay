@@ -1,0 +1,52 @@
+'use strict';
+const {
+    Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+    class Brands extends Model {
+        static associate({ Categories, Products }) {
+            this.belongsToMany(Categories, {
+                through: 'Categoriesbrands',
+                as: 'brand_categories',
+                foreignKey: 'brandId',
+            });
+            this.hasMany(Products, { foreignKey: "brandId", as: "brand_products" })
+        }
+    }
+    Brands.init({
+        brand_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
+        },
+        name_tm: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notNull: {
+                    msg: "Brand name cannot be null",
+                },
+                notEmpty: {
+                    msg: "Brand name cannot be empty",
+                },
+            },
+        },
+        name_ru: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                notNull: {
+                    msg: "Brand name cannot be null",
+                },
+                notEmpty: {
+                    msg: "Brand name cannot be empty",
+                },
+            },
+        },
+        image: DataTypes.STRING
+    }, {
+        sequelize,
+        tableName: "brands",
+        modelName: 'Brands',
+    });
+    return Brands;
+};
