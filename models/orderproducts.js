@@ -46,6 +46,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        isSeleсted: DataTypes.BOOLEAN,
         is_ordered: DataTypes.STRING,
         size: {
             type: DataTypes.STRING,

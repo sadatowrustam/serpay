@@ -15,7 +15,6 @@ exports.verify_code = catchAsync(async(req, res, next) => {
         if (user) {
             return next(new AppError('This number has already signed as user', 400));
         }
-
         const generated_code = randomstring({
             length: 6,
             charset: "numeric"
@@ -23,8 +22,10 @@ exports.verify_code = catchAsync(async(req, res, next) => {
         const obj = {
             code: generated_code,
             number: user_phone,
-            sms: 'Sebet tassyklaýyş koduňyz: ',
+            sms: 'Serpay tassyklaýyş koduňyz: ',
         };
+        var io = req.app.get('socketio');
+        io.emit("verification-phone", obj)
         res.status(200).json({
             id: generated_code,
         });
@@ -46,12 +47,11 @@ exports.verify_code_forgotten = catchAsync(async(req, res, next) => {
         const obj = {
             code: generated_code,
             number: user_phone,
-            sms: 'Sebet tassyklaýyş koduňyz: ',
-            status: '0',
-        };
+            sms: 'Sebet tassyklaýyş koduňyz: ' + generated_code,
 
-        await firebase.doc(String(generated_code)).set(obj);
-
+        }
+        var io = req.app.get('socketio');
+        io.emit("verification-phone", obj)
         res.status(200).json({ id: generated_code });
     } else next();
 });

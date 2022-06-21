@@ -24,6 +24,9 @@ module.exports = {
                 type: DataTypes.INTEGER,
                 allowNull: false
             },
+            isSelected: {
+                type: DataTypes.BOOLEAN,
+            },
             is_ordered: {
                 type: DataTypes.BOOLEAN
             },
@@ -38,6 +41,9 @@ module.exports = {
             total_price: {
                 type: DataTypes.REAL,
                 allowNull: false,
+            },
+            size: {
+                type: DataTypes.STRING,
             },
             createdAt: {
                 allowNull: false,

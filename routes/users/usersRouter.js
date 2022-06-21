@@ -30,11 +30,8 @@ const {
     addOne,
     deleteCompetitor
 } = require('../../controllers/users/usersControllers');
-
 const router = express.Router();
-
 router.patch('/forgot-password', verify_code_forgotten, forgotPassword);
-
 router.post('/signup', verify_code, signup);
 router.post('/login', login);
 router.post("/address", addMyAddress)
