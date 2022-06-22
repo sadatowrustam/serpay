@@ -17,4 +17,5 @@ exports.getAllFreeProducts = catchAsync(async(req, res, next) => {
             ]
         ]
     })
+    return res.status(200).send(free_products)
 })

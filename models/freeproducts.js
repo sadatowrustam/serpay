@@ -5,8 +5,8 @@ const {
 module.exports = (sequelize, DataTypes) => {
     class Freeproducts extends Model {
 
-        static associate(models) {
-
+        static associate({ Images }) {
+            this.hasMany(Images, { as: "images", foreignKey: "freeproductId" })
         }
     }
     Freeproducts.init({
@@ -14,9 +14,13 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
         },
+        name_tm: DataTypes.STRING,
+        name_ru: DataTypes.STRING,
+        body_tm: DataTypes.STRING,
+        body_ru: DataTypes.STRING,
         link: DataTypes.STRING,
-        productId: DataTypes.INTEGER,
-        expire_data: DataTypes.STRING
+        expire_date: DataTypes.STRING,
+        goal: DataTypes.INTEGER
     }, {
         sequelize,
         tableName: "freeproducts",

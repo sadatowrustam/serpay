@@ -14,6 +14,9 @@ module.exports = {
             productcolorId: {
                 type: DataTypes.INTEGER
             },
+            freeproductId: {
+                type: DataTypes.INTEGER
+            },
             image: {
                 type: DataTypes.STRING
             },

@@ -221,40 +221,9 @@ exports.discount = catchAsync(async(req, res, next) => {
         limit,
         offset,
         include: [{
-                model: Productcolor,
-                as: "product_colors",
-                include: [{
-                        model: Images,
-                        as: "product_images"
-                    },
-                    {
-                        model: Productsizes,
-                        as: "product_sizes",
-                        include: {
-                            model: Stock,
-                            as: "product_size_stock"
-                        }
-                    }
-                ]
-            },
-            {
-                model: Productsizes,
-                as: "product_sizes",
-                include: {
-                    model: Stock,
-                    as: "product_size_stock"
-                }
-            },
-            {
-                model: Stock,
-                as: "product_stock",
-                limit: 1
-            },
-            {
-                model: Images,
-                as: "images"
-            }
-        ]
+            model: Images,
+            as: "images"
+        }]
     });
     return res.status(200).send({ discount_products })
 })
@@ -347,40 +316,9 @@ exports.newProducts = catchAsync(async(req, res) => {
             ["id", "DESC"]
         ],
         include: [{
-                model: Productcolor,
-                as: "product_colors",
-                include: [{
-                        model: Images,
-                        as: "product_images"
-                    },
-                    {
-                        model: Productsizes,
-                        as: "product_sizes",
-                        include: {
-                            model: Stock,
-                            as: "product_size_stock"
-                        }
-                    }
-                ]
-            },
-            {
-                model: Productsizes,
-                as: "product_sizes",
-                include: {
-                    model: Stock,
-                    as: "product_size_stock"
-                }
-            },
-            {
-                model: Stock,
-                as: "product_stock",
-                limit: 1
-            },
-            {
-                model: Images,
-                as: "images"
-            }
-        ]
+            model: Images,
+            as: "images"
+        }]
     })
 
     return res.status(200).send({ new_products }, );
