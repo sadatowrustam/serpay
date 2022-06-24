@@ -66,7 +66,7 @@ exports.deleteBrand = catchAsync(async(req, res, next) => {
         return next(new AppError('Brand did not found with that ID', 404));
 
     if (brand.brand_preview_image) {
-        fs.unlink(`public/${brand_id}_brand_preview.webp`, function(err) {
+        fs.unlink(`static/${brand_id}_brand.webp`, function(err) {
             if (err) throw err;
         });
     }

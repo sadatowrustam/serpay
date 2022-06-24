@@ -20,10 +20,12 @@ module.exports = (sequelize, DataTypes) => {
         productColorId: DataTypes.INTEGER,
         size: DataTypes.STRING,
         price: DataTypes.REAL,
+        price_old: DataTypes.REAL,
         price_tm: DataTypes.REAL,
         price_tm_old: DataTypes.REAL,
         price_usd: DataTypes.REAL,
-        price_usd_old: DataTypes.REAL
+        price_usd_old: DataTypes.REAL,
+        discount: DataTypes.INTEGER
     }, {
         sequelize,
         tableName: "productsizes",

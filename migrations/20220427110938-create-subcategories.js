@@ -36,6 +36,9 @@ module.exports = {
                     },
                 },
             },
+            image: {
+                type: DataTypes.STRING
+            },
             categoryId: {
                 type: DataTypes.INTEGER
             },

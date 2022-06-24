@@ -12,7 +12,8 @@ const {
     addColor,
     addSize,
     editSize,
-    addSizeToColor
+    addSizeToColor,
+    editColor
 } = require('../../../controllers/admin/productsControllers');
 const { login, protect } = require("../../../controllers/admin/adminControllers")
 const router = express.Router();
@@ -23,6 +24,7 @@ router.get("/:product_id", getOneProduct)
 router.post("/add", addProduct)
 router.post("/add/size/:id", addSize)
 router.post("/add/color/:id", addColor)
+router.patch("/color/:id", editColor)
 router.post("/color/size/:id", addSizeToColor)
 router.patch('/:id', protect, editProduct);
 router.patch("/size/:id", protect, editSize)

@@ -93,8 +93,6 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: true
         },
         isAction: DataTypes.BOOLEAN,
-        isGift: DataTypes.BOOLEAN,
-        isAction: DataTypes.BOOLEAN,
         rating: {
             type: DataTypes.REAL,
             defaultValue: 0
@@ -103,12 +101,16 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             defaultValue: 0
         },
+        sold_count: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
+        },
         is_new_expire: {
             type: DataTypes.BIGINT
         },
         categoryId: DataTypes.INTEGER,
         subcategoryId: DataTypes.INTEGER,
-        bannerId: DataTypes.INTEGER
+        brandId: DataTypes.INTEGER
     }, {
         sequelize,
         tableName: "products",

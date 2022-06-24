@@ -8,6 +8,7 @@ router.use("/banners", require("./routes/bannersRouter")) //test edildi
 router.use('/categories', require('./routes/categoriesRouter')); //delete test etmeli
 router.use("/subcategories", require("./routes/subcategoriesRouter")) //test edildi
 router.use("/brands", require("./routes/brandsRouter")) //test etmeli
+router.use("/colors", require("./routes/colorRouter"))
 router.use("/products", require("./routes/productsRouter")) //test etmeli
 router.use("/orders", require("./routes/ordersRouter"))
 router.use("/free-products", require("./routes/free-productsRouter")) //test etmeli

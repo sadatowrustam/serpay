@@ -102,6 +102,10 @@ module.exports = {
                 type: DataTypes.INTEGER,
                 defaultValue: 0
             },
+            sold_count: {
+                type: DataTypes.INTEGER,
+                defaultValue: 0
+            },
             isNew: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: true
@@ -116,7 +120,7 @@ module.exports = {
                 type: DataTypes.BOOLEAN
             },
             is_new_expire: {
-                type: DataTypes.INTEGER
+                type: DataTypes.BIGINT
             },
             categoryId: {
                 type: DataTypes.INTEGER,
@@ -125,9 +129,6 @@ module.exports = {
                 type: DataTypes.INTEGER
             },
             brandId: {
-                type: DataTypes.INTEGER
-            },
-            bannerId: {
                 type: DataTypes.INTEGER
             },
             createdAt: {

@@ -16,7 +16,6 @@ router.get("/:category_id", getOneCategory)
 router.post('/add', addCategory);
 router.post("/brands/add", addCategoryBrand)
 router.patch('/:id', editCategory);
-router.post("/upload-image/:id", uploadCategoryImage)
 router.delete('/delete/:id', deleteCategory);
 
 module.exports = router;

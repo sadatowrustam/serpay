@@ -2,7 +2,7 @@ const fs = require('fs');
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
 const { Categories, Subcategories, Products, Stock } = require('../../models');
-
+const sharp = require("sharp")
 exports.addSubcategory = catchAsync(async(req, res, next) => {
     const { category_id, name_tm, name_ru } = req.body;
     const category = await Categories.findOne({
@@ -56,7 +56,11 @@ exports.deleteSubcategory = catchAsync(async(req, res, next) => {
     const products = await Products.findAll({
         where: { subcategoryId: subcategory.id },
     });
-
+    if (subcategory.image) {
+        fs.unlink(`static/${subcategory.image}`, function(err) {
+            if (err) throw err;
+        })
+    }
     if (products) {
         products.forEach(async(product) => {
             await Stock.destroy({ where: { productId: product.id } });
@@ -71,3 +75,20 @@ exports.getOne = catchAsync(async(req, res, next) => {
     let subcategory = await Subcategories.findOne({ where: { subcategory_id } })
     res.status(200).send(subcategory)
 })
+exports.uploadSubcategoryImage = catchAsync(async(req, res, next) => {
+    const subcategory_id = req.params.id;
+    const subcategory = await Subcategories.findOne({ where: { subcategory_id } });
+    req.files = Object.values(req.files)
+    if (!subcategory)
+        return next(new AppError('subcategory did not found with that ID', 404));
+    const image = `${subcategory_id}_subcategory.webp`;
+    const photo = req.files[0].data
+    let buffer = await sharp(photo).webp().toBuffer()
+    await sharp(buffer).toFile(`static/${image}`);
+
+    await subcategory.update({
+        image,
+    });
+
+    return res.status(201).send(subcategory);
+});

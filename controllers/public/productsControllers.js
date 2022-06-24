@@ -99,13 +99,6 @@ exports.searchProducts = catchAsync(async(req, res, next) => {
                     },
 
                 },
-                {
-                    name_en: {
-                        [Op.like]: {
-                            [Op.any]: keywordsArray,
-                        },
-                    },
-                },
             ],
             isActive: true,
         },
@@ -191,10 +184,18 @@ exports.discount = catchAsync(async(req, res, next) => {
     const { offset, sort, brand_name, category_name } = req.query;
     let order, where;
     where = {
-        // isActive: true,
-        discount: {
-            [Op.ne]: null
-        },
+        isActive: true,
+        [Op.or]: [{
+                discount: {
+                    [Op.ne]: 0
+                }
+            },
+            {
+                "$product_sizes.discount$": {
+                    [Op.ne]: 0
+                }
+            }
+        ]
     }
     if (sort == 1) {
         order = [
@@ -221,9 +222,15 @@ exports.discount = catchAsync(async(req, res, next) => {
         limit,
         offset,
         include: [{
-            model: Images,
-            as: "images"
-        }]
+                model: Images,
+                as: "images"
+            },
+            {
+                model: Productsizes,
+                as: "product_sizes",
+                // attributes: ["discount","size",""]
+            }
+        ],
     });
     return res.status(200).send({ discount_products })
 })
@@ -304,23 +311,44 @@ exports.giftProducts = catchAsync(async(req, res, next) => {
 exports.newProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const offset = req.query.offset || 0;
-
+    const { sort, isAction } = req.query
+    let order, where
+    if (sort == 1) {
+        order = [
+            ['price', 'DESC'],
+            ["product_sizes", "price", "DESC"]
+        ];
+    } else if (sort == 0) {
+        order = [
+            ['price', 'ASC'],
+            ['product_sizes', "price", "ASC"]
+        ];
+    } else order = [
+        ['updatedAt', 'DESC']
+    ];
+    order.push(["images", "id", "DESC"])
+    where = {
+        // isActive: true,
+        isNew: true
+    }
+    if (isAction && isAction != "undefined") {
+        where.isAction = isAction
+    }
     const new_products = await Products.findAll({
-        where: {
-            // isActive: true,
-            isNew: true
-        },
+        where,
         limit,
         offset,
-        order: [
-            ["id", "DESC"]
-        ],
         include: [{
-            model: Images,
-            as: "images"
-        }]
+                model: Images,
+                as: "images",
+            },
+            {
+                model: Productsizes,
+                as: "product_sizes"
+            }
+        ],
+        order,
     })
-
     return res.status(200).send({ new_products }, );
 });
 exports.setRating = catchAsync(async(req, res, next) => {

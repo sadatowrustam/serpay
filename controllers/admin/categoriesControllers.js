@@ -104,20 +104,3 @@ exports.getOneCategory = catchAsync(async(req, res, next) => {
     }
     return res.status(200).send(category)
 })
-exports.uploadCategoryImage = catchAsync(async(req, res, next) => {
-    const category_id = req.params.id;
-    const category = await Categories.findOne({ where: { category_id } });
-    req.files = Object.values(req.files)
-    if (!category)
-        return next(new AppError('category did not found with that ID', 404));
-    const image = `${category_id}_category.webp`;
-    const photo = req.files[0].data
-    let buffer = await sharp(photo).webp().toBuffer()
-    await sharp(buffer).toFile(`static/${image}`);
-
-    await category.update({
-        image,
-    });
-
-    return res.status(201).send(category);
-});

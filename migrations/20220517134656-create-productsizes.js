@@ -39,6 +39,9 @@ module.exports = {
             price_tm_old: {
                 type: DataTypes.REAL
             },
+            discount: {
+                type: DataTypes.REAL
+            },
             createdAt: {
                 allowNull: false,
                 type: DataTypes.DATE
