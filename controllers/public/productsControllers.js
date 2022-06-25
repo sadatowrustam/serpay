@@ -185,29 +185,22 @@ exports.discount = catchAsync(async(req, res, next) => {
     let order, where;
     where = {
         isActive: true,
-        [Op.or]: [{
-                discount: {
-                    [Op.ne]: 0
-                }
-            },
-            {
-                "$product_sizes.discount$": {
-                    [Op.ne]: 0
-                }
-            }
-        ]
+        isDiscount: true
     }
     if (sort == 1) {
         order = [
-            ['price', 'DESC']
+            ['price', 'DESC'],
+            ["product_sizes", "price", "DESC"]
         ];
     } else if (sort == 0) {
         order = [
-            ['price', 'ASC']
+            ['price', 'ASC'],
+            ['product_sizes', "price", "ASC"]
         ];
     } else order = [
         ['updatedAt', 'DESC']
     ];
+    order.push(["images", "id", "DESC"])
     if (category_name) {
         const category = await Categories.findOne({ where: { name_tm: category_name } })
         where.categoryId = category.id
@@ -228,7 +221,7 @@ exports.discount = catchAsync(async(req, res, next) => {
             {
                 model: Productsizes,
                 as: "product_sizes",
-                // attributes: ["discount","size",""]
+
             }
         ],
     });
@@ -244,15 +237,18 @@ exports.actionProducts = catchAsync(async(req, res, next) => {
     }
     if (sort == 1) {
         order = [
-            ['price', 'DESC']
+            ['price', 'DESC'],
+            ["product_sizes", "price", "DESC"]
         ];
     } else if (sort == 0) {
         order = [
-            ['price', 'ASC']
+            ['price', 'ASC'],
+            ['product_sizes', "price", "ASC"]
         ];
     } else order = [
         ['updatedAt', 'DESC']
     ];
+    order.push(["images", "id", "DESC"])
     if (category_name) {
         const category = await Categories.findOne({ where: { name_tm: category_name } })
         where.categoryId = category.id
@@ -263,11 +259,18 @@ exports.actionProducts = catchAsync(async(req, res, next) => {
     }
     const action_products = await Products.findAll({
         where,
-        attributes: fieldsForPublic,
         order,
         limit,
         offset,
-        include
+        include: [{
+                model: Images,
+                as: "images"
+            },
+            {
+                model: Productsizes,
+                as: "product_sizes"
+            }
+        ]
     });
     return res.status(200).send({ action_products })
 })

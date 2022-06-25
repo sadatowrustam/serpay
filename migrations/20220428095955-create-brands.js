@@ -12,7 +12,7 @@ module.exports = {
                 type: DataTypes.UUID,
                 defaultValue: DataTypes.UUIDV4
             },
-            name_tm: {
+            name: {
                 type: DataTypes.STRING,
                 allowNull: false,
                 validate: {
@@ -24,18 +24,7 @@ module.exports = {
                     },
                 },
             },
-            name_ru: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                validate: {
-                    notNull: {
-                        msg: "Brand name cannot be null",
-                    },
-                    notEmpty: {
-                        msg: "Brand name cannot be empty",
-                    },
-                },
-            },
+
             image: {
                 type: DataTypes.STRING
             },

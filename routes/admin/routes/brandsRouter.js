@@ -18,5 +18,4 @@ router.patch('/:id', editBrand);
 router.delete('/:id', deleteBrand);
 router.delete('/delete-category', deleteBrandCategory);
 router.post('/upload-image/:id', uploadBrandImage);
-
 module.exports = router;

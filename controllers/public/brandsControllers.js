@@ -31,10 +31,8 @@ exports.getAllBrands = catchAsync(async(req, res) => {
 
 exports.getBrandProducts = catchAsync(async(req, res, next) => {
     const brand = await Brands.findOne({ where: { brand_id: req.params.id } });
-
     if (!brand)
         return next(new AppError('Brand did not found with that ID', 404));
-
     const limit = req.query.limit || 20;
     const offset = req.query.offset;
     const sort = req.query.sort;

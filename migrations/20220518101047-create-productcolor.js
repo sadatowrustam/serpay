@@ -15,6 +15,12 @@ module.exports = {
             productId: {
                 type: DataTypes.INTEGER
             },
+            color_name_tm:{
+                type:DataTypes.STRING
+            },
+            color_name_ru:{
+                type:DataTypes.STRING
+            },
             createdAt: {
                 allowNull: false,
                 type: DataTypes.DATE
