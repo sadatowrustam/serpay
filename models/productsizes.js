@@ -5,10 +5,10 @@ const {
 module.exports = (sequelize, DataTypes) => {
     class Productsizes extends Model {
 
-        static associate({ Stock, Productcolor, Products }) {
+        static associate({ Stock, Productcolor, Productsizes }) {
             this.hasOne(Stock, { as: "product_size_stock", foreignKey: "productsizeId" })
             this.belongsTo(Productcolor, { as: "product_size", foreignKey: "productColorId" })
-            this.belongsTo(Products, { as: "products", foreignKey: "productId" })
+            this.belongsTo(Productsizes, { as: "products", foreignKey: "productId" })
         }
     }
     Productsizes.init({

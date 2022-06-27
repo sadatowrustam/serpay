@@ -106,10 +106,6 @@ module.exports = {
                 type: DataTypes.INTEGER,
                 defaultValue: 0
             },
-            isDiscount: {
-                type: DataTypes.BOOLEAN,
-                defaultValue: false
-            },
             isNew: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: true

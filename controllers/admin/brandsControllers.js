@@ -12,7 +12,8 @@ const {
 } = require('../../models');
 
 exports.addBrand = catchAsync(async(req, res, next) => {
-    const newBrand = await Brands.create(req.body)
+    const { name_tm, name_ru } = req.body;
+    const newBrand = await Brands.create({ name_tm, name_ru });
     return res.status(201).send(newBrand);
 });
 

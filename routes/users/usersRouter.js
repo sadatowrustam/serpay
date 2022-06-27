@@ -34,7 +34,7 @@ const router = express.Router();
 router.patch('/forgot-password', verify_code_forgotten, forgotPassword);
 router.post('/signup', verify_code, signup);
 router.post('/login', login);
-router.post("/address", addMyAddress)
+router.post("/address", protect, addMyAddress)
 router.get("/address", getAllAddress)
 router.patch("/address/:id", editMyAddress)
 router.get("/address/:id", getAddress)

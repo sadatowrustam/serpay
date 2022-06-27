@@ -164,6 +164,255 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
     })
     return res.send(oneProduct)
 })
+exports.addColor = catchAsync(async(req, res, next) => {
+    var sizes = []
+    let data = {}
+    const color_id = req.body.color_id
+    const product = await Products.findOne({ where: { product_id: req.params.id } })
+    const color = await Colors.findOne({ where: { color_id } })
+    const product_color = await Productcolor.create({ productId: product.id, color_name_tm: color.name_tm, color_name_ru: color.name_ru })
+    for (let i = 0; i < req.body.sizes.length; i++) {
+        let data = {}
+        if (req.body.sizes[i].price_usd) {
+            data.price_tm = null
+            data.price_tm_old = null
+            data.price_old = null;
+            data.price_usd_old = null
+            data.price_usd = null
+            if (req.body.discount) {
+                data.price_usd_old = req.body.sizes[i].price_usd
+                req.body.price_usd = (data.price_usd_old / 100) * req.body.discount
+            }
+            let currency = await Currency.findOne()
+            data.price = req.body.sizes[i].price_usd * currency.value
+            data.price_usd = req.body.sizes[i].price_usd
+        } else {
+            data.price_tm = null
+            data.price_tm_old = null
+            data.price_old = null;
+            data.price_usd_old = null
+            data.price_usd = null
+            if (req.body.discount) {
+                data.price_tm_old = req.body.sizes[i].price_tm
+                req.body.price_tm = (data.price_tm_old / 100) * req.body.discount
+            }
+            data.price = req.body.sizes[i].price_tm
+            data.price_tm = req.body.sizes[i].price_tm
+        }
+    }
+    return res.status(201).send({ product_color, sizes });
+});
+exports.editColor = catchAsync(async(req, res, next) => {
+    const product_color = await Productcolor.findOne({ where: { product_color_id: req.params.id } })
+    if (!product_color) return next(new AppError("Product color not found with that id", 404))
+    const color = await Colors.findOne({ where: { color_id } })
+    await product_color.update({ name_tm: color.name_tm, name_ru: color.name_ru })
+    return res.status(201).send({ product_color });
+});
+exports.addSize = catchAsync(async(req, res, next) => {
+    var sizes = []
+    const product = await Products.findOne({ where: { product_id: req.params.id } })
+    if (!product) return next(new AppError("Product with that id not found", 404))
+    for (let i = 0; i < req.body.sizes.length; i++) {
+        let data = {}
+        if (req.body.sizes[i].price_usd) {
+            let currency = await Currency.findOne()
+            data.price_tm = null
+            data.price_tm_old = null
+            data.price_old = null;
+            data.price_usd_old = null
+            data.price_usd = null
+            if (req.body.sizes[i].discount) {
+                req.body.sizes[i].price_usd_old = req.body.sizes[i].price_usd
+                req.body.sizes[i].discount = req.body.sizes[i].discount
+                req.body.sizes[i].price_usd = (req.body.sizes[i].price_usd_old / 100) * (100-req.body.sizes[i].discount)
+                req.body.sizes[i].price_old = req.body.sizes[i].price_usd_old * currency.value
+            }
+            data.price = req.body.sizes[i].price_usd * currency.value
+            data.price_usd=req.body.sizes[i].price_usd
+            
+        } else {
+            data.price_tm = null
+            data.price_tm_old = null
+            data.price_old = null;
+            data.price_usd_old = null
+            data.price_usd = null
+            if (req.body.discount) {
+                data.discount = req.body.sizes[i].discount
+                data.price_tm_old = req.body.sizes[i].price_tm
+                data.price_old = req.body.sizes[i].price_tm
+                req.body.price_tm = (data.price_tm_old / 100) * (100-req.body.discount)
+            }
+            data.price = req.body.sizes[i].price_tm
+            data.price_tm = req.body.sizes[i].price_tm
+        }
+        if (req.body.color_id) {
+            var product_color = await Productcolor.findOne({ where: { product_color_id: req.body.color_id } })
+            data.productColorId = product_color.id
+        }
+        data.size = req.body.sizes[i].size
+        data.productId = product.id
+        let product_size = await Productsizes.create(data)
+        sizes.push(product_size)
+        data.productSizeId = product_size.id
+        data.quantity = req.body.sizes[i].quantity,
+            await Stock.create(data);
+    }
+    return res.status(201).send(sizes)
+})
+exports.addSizeToColor = catchAsync(async(req, res, next) => {
+    let data = {}
+    if (req.body.size.price_usd) {
+        let currency = await Currency.findOne()
+        data.price = price_usd * currency.value
+        data.price_usd = price.size.price_usd
+    } else {
+        data.price = price.size.price_tm
+        data.price_tm = price.size.price_tm
+    }
+    if (req.body.color_id) {
+        var product_color = await Productcolor.findOne({ where: { product_color_id: req.body.color_id } })
+        data.productColorId = product_color.id
+    }
+    let product_size = await Productsizes.create(data)
+    sizes.push(product_size)
+    data.productId = req.params.id
+    data.productSizeId = product_size.id
+    data.quantity = req.body.size.quantity,
+        await Stock.create(data);
+
+    return res.status(201).send(sizes)
+})
+exports.editCloth = catchAsync(async(req, res, next) => {
+    const updateProduct = await Products.findOne({ where: { product_id: req.params.id } })
+    if (!updateProduct) {
+        return next(new AppError("Product not found with that id", 404))
+    }
+    const category = await Categories.findOne({
+        where: { category_id: req.body.category_id },
+    });
+    if (!category)
+        return next(new AppError('Category did not found with that ID', 404));
+    req.body.categoryId = category.id;
+    if (req.body.subcategory_id) {
+        const subcategory = await Subcategories.findOne({
+            where: { subcategory_id: [req.body.subcategory_id] },
+        });
+        if (!subcategory)
+            return next(new AppError('Sub-category did not found with that ID', 404));
+        req.body.subcategoryId = subcategory.id;
+    }
+    if (req.body.brand_id) {
+        const brand = await Brands.findOne({
+            where: { brand_id: req.body.brand_id }
+        })
+        if (!brand)
+            return next(new AppError("Brand did not found with that Id"), 404)
+        req.body.brandId = brand.id
+    }
+    await updateProduct.update(req.body)
+    if (req.body.colors) {
+        var colors = []
+        let data = {}
+        data.productId = newProduct.id
+        for (const color of req.body.color) {
+            const product_color = Productcolors.create({ productId: newProduct.id })
+            colors.push(product_color)
+            if (color.sizes) {
+                for (let i = 0; i < color.sizes.length; i++) {
+                    let product_size = await Productsizes.findOne({ where: { id: color.sizes[i].id } })
+                    if (!product_size) return next(new AppError("Product size not found with that id", 404))
+                    let color_size_data = {}
+                    color_size_data.productColorId = product_color.id
+                    color_size_data.size = color.sizes[i].size
+                    if (color.sizes[i].price_usd) {
+                        color_size_data.price_tm = null
+                        color_size_data.price_tm_old = null
+                        color_size_data.price_old = null;
+                        color_size_data.price_usd_old = null
+                        color_size_data.price_usd = null
+                        let currency = await Currency.findOne()
+                        if (color.sizes[i].discount) {
+                            color_size_data.price_usd_old = color.sizes[i].price_usd
+                            color_size_data.price_usd = (color_size_data.price_usd_old / 100) * color.sizes[i].discount
+                        }
+                        color_size_data.price = color_size.price_usd * currency.value
+                        color_size_data.price_usd = color_size.price_usd
+                    } else {
+                        color_size_data.price_tm = null
+                        color_size_data.price_tm_old = null
+                        color_size_data.price_old = null;
+                        color_size_data.price_usd_old = null
+                        color_size_data.price_usd = null
+                        if (color.sizes[i].discount) {
+                            color_size_data.price_tm_old = color.sizes[i].price_usd
+                            color_size_data.price_tm = (color_size_data.price_usd_old / 100) * color.sizes[i].discount
+                        }
+                        color_size_data.price = price.sizes[i].price_tm
+                        color_size_data.price_tm = price.sizes[i].price_tm
+                    }
+                    data.productId = newProduct.id
+                    data.productSizeId = product_size.id
+                    product_size.update(color_size_data)
+                    data.quantity = colors.sizes[i].quantity,
+                        await Stock.update(data);
+                }
+            }
+        }
+    } else if (req.body.sizes) {
+        for (let i = 0; i < req.body.sizes.length; i++) {
+            let data = {}
+            if (req.body.sizes[i].price_usd) {
+                let currency = await Currency.findOne()
+                data.price = price_usd * currency.value
+                data.price_usd = price.sizes[i].price_usd
+            } else {
+                data.price = price.sizes[i].price_tm
+                data.price_tm = price.sizes[i].price_tm
+            }
+            let product_size = await Productsizes.create(data)
+            data.productId = newProduct.id
+            data.productSizeId = product_size.id
+            data.quantity = req.body.sizes[i].quantity,
+                await Stock.create(data);
+        }
+    }
+    return res.status(201).send({ newProduct });
+});
+exports.editSize = catchAsync(async(req, res, next) => {
+    let product_size = await Productsizes.findOne({ where: { product_size_id: req.params.id } })
+    if (!product_size) return next(new AppError("Product size not found with that id", 404))
+    let data = {}
+    if (req.body.price_usd) {
+        data.price_tm = null
+        data.price_tm_old = null
+        data.price_old = null;
+        data.price_usd_old = null
+        data.price_usd = null
+        if (req.body.discount) {
+            data.price_usd_old = req.body.price_usd
+            req.body.price_usd = (data.price_usd_old / 100) * (100-req.body.discount)
+        }
+        let currency = await Currency.findOne()
+        data.price = req.body.price_usd * currency.value
+        data.price_usd = req.body.price_usd
+    } else {
+        if (req.body.discount) {
+            data.price_tm_old = req.body.price_usd
+            data.price_tm = (color_size_data.price_usd_old / 100) * color.sizes[i].discount
+        }
+        data.price = req.body.price_tm
+        data.price_tm = req.body.price_tm
+    }
+    data.productId = product_size.productId
+    data.size = req.body.size
+    data.quantity = req.body.quantity
+    let stock = await Stock.findOne({ where: { productsizeId: product_size.id } })
+    if (!stock) return next(new AppError("Stock with that id not found", 404))
+    await stock.update(data)
+    await product_size.update(data)
+    return res.status(201).send(product_size)
+})
 exports.addProduct = catchAsync(async(req, res, next) => {
     const category = await Categories.findOne({
         where: { category_id: req.body.category_id },
@@ -198,7 +447,6 @@ exports.addProduct = catchAsync(async(req, res, next) => {
         req.body.price_usd_old = null
         let currency = await Currency.findOne()
         if (req.body.discount > 0) {
-            req.body.isDiscount = true
             req.body.price_usd_old = req.body.price_usd;
             req.body.price_usd =
                 (req.body.price_usd_old / 100) *
@@ -208,13 +456,11 @@ exports.addProduct = catchAsync(async(req, res, next) => {
         }
         req.body.price = req.body.price_usd * currency.value
     } else {
-
         req.body.price_usd = null;
         req.body.price_usd_old = null;
         req.body.price_old = null;
         req.body.price_tm_old = null
         if (req.body.discount > 0) {
-            req.body.isDiscount = true
             req.body.price_tm_old = req.body.price_tm;
             req.body.price_tm =
                 (req.body.price_tm_old / 100) *
@@ -234,11 +480,6 @@ exports.editProduct = catchAsync(async(req, res, next) => {
     const product = await Products.findOne({
         where: { product_id: req.params.id },
     });
-    req.body.price = null
-    req.body.price_old = null
-    req.body.price_tm_old = null
-    req.body.price_usd_old = null
-    console.log(req.body)
     if (!product)
         return next(new AppError('Product did not found with that ID', 404));
     const fields = Object.values(req.body).map((el) => el);
@@ -264,23 +505,26 @@ exports.editProduct = catchAsync(async(req, res, next) => {
             );
         req.body.subcategoryId = subcategory.id;
     }
-    if (req.body.brand_id) {
-        const brand = await Brands.findOne({ where: { brand_id: req.body.brand_id } })
-        if (!brand) return next(new AppError("Brand not found with your brand id", 404))
-        req.body.brandId = brand.id
-    }
     if (req.body.price_usd) {
         req.body.price_tm = null
+        req.body.price_tm_old = null
+        req.body.price_old = null
+        req.body.price_usd_old = null
         let currency = await Currency.findOne()
         if (req.body.discount > 0) {
-            req.body.isDiscount = true
             req.body.price_usd_old = req.body.price_usd;
-            req.body.price_usd = (req.body.price_usd_old / 100) * (100 - req.body.discount);
-            req.body.price_old = req.body.price_usd_old * currency.value;
+            req.body.price_usd =
+                (req.body.price_usd_old / 100) *
+                (100 - req.body.discount);
+            req.body.price_old =
+                req.body.price_usd_old * currency.value;
         }
         req.body.price = req.body.price_usd * currency.value
-    } else if (req.body.price_tm) {
+    } else {
         req.body.price_usd = null;
+        req.body.price_usd_old = null;
+        req.body.price_old = null;
+        req.body.price_tm_old = null
         if (req.body.discount > 0) {
             req.body.price_tm_old = req.body.price_tm;
             req.body.price_tm =
@@ -300,114 +544,6 @@ exports.editProduct = catchAsync(async(req, res, next) => {
     }
     return res.status(200).send(product);
 });
-exports.addColor = catchAsync(async(req, res, next) => {
-    const color_id = req.body.color_id
-    const product = await Products.findOne({ where: { product_id: req.params.id } })
-    const color = await Colors.findOne({ where: { color_id } })
-    const product_color = await Productcolor.create({ productId: product.id, color_name_tm: color.name_tm, color_name_ru: color.name_ru })
-    return res.status(201).send({ product_color });
-});
-exports.editColor = catchAsync(async(req, res, next) => {
-    const product_color = await Productcolor.findOne({ where: { product_color_id: req.params.id } })
-    if (!product_color) return next(new AppError("Product color not found with that id", 404))
-    const color = await Colors.findOne({ where: { color_id } })
-    await product_color.update({ name_tm: color.name_tm, name_ru: color.name_ru })
-    return res.status(201).send({ product_color });
-});
-exports.addSize = catchAsync(async(req, res, next) => {
-    var sizes = []
-    let isDiscount = false
-    const product = await Products.findOne({ where: { product_id: req.params.id } })
-    if (!product) return next(new AppError("Product with that id not found", 404))
-    for (let i = 0; i < req.body.sizes.length; i++) {
-        let data = {}
-        if (req.body.sizes[i].price_usd) {
-            let currency = await Currency.findOne()
-            data.price_tm = null
-            data.price_tm_old = null
-            data.price_old = null;
-            data.price_usd_old = null
-            data.price_usd = null
-            if (req.body.sizes[i].discount > 0) {
-                isDiscount = true
-                req.body.sizes[i].price_usd_old = req.body.sizes[i].price_usd
-                req.body.sizes[i].discount = req.body.sizes[i].discount
-                req.body.sizes[i].price_usd = (req.body.sizes[i].price_usd_old / 100) * (100 - req.body.sizes[i].discount)
-                req.body.sizes[i].price_old = req.body.sizes[i].price_usd_old * currency.value
-            }
-            data.price = req.body.sizes[i].price_usd * currency.value
-            data.price_usd = req.body.sizes[i].price_usd
-
-        } else {
-            data.price_tm = null
-            data.price_tm_old = null
-            data.price_old = null;
-            data.price_usd_old = null
-            data.price_usd = null
-            if (req.body.discount > 0) {
-                isDiscount = true
-                data.discount = req.body.sizes[i].discount
-                data.price_tm_old = req.body.sizes[i].price_tm
-                data.price_old = req.body.sizes[i].price_tm
-                req.body.price_tm = (data.price_tm_old / 100) * (100 - req.body.discount)
-            }
-            data.price = req.body.sizes[i].price_tm
-            data.price_tm = req.body.sizes[i].price_tm
-        }
-        if (req.body.color_id) {
-            var product_color = await Productcolor.findOne({ where: { product_color_id: req.body.color_id } })
-            data.productColorId = product_color.id
-        }
-        data.size = req.body.sizes[i].size
-        data.productId = product.id
-        let product_size = await Productsizes.create(data)
-        sizes.push(product_size)
-        data.productSizeId = product_size.id
-        data.quantity = req.body.sizes[i].quantity,
-            await Stock.create(data);
-    }
-    await product.update({ isDiscount })
-    return res.status(201).send({ product, sizes })
-})
-exports.editSize = catchAsync(async(req, res, next) => {
-    let product_size = await Productsizes.findOne({ where: { product_size_id: req.params.id }, include: { model: Products, as: "products" } })
-    if (!product_size) return next(new AppError("Product size not found with that id", 404))
-    let data = {}
-    let isDiscount = false
-    if (req.body.price_usd) {
-        data.price_tm = null
-        data.price_tm_old = null
-        data.price_old = null;
-        data.price_usd_old = null
-        data.price_usd = null
-        if (req.body.discount > 0) {
-            isDiscount = true
-            data.price_usd_old = req.body.price_usd
-            req.body.price_usd = (data.price_usd_old / 100) * (100 - req.body.discount)
-        }
-        let currency = await Currency.findOne()
-        data.price = req.body.price_usd * currency.value
-        data.price_usd = req.body.price_usd
-    } else {
-        if (req.body.discount > 0) {
-            isDiscount = true
-            data.price_tm_old = req.body.price_usd
-            data.price_tm = (data.price_tm_old / 100) * req.body.discount
-        }
-        data.price = req.body.price_tm
-        data.price_tm = req.body.price_tm
-    }
-    data.productId = product_size.productId
-    data.size = req.body.size
-    data.quantity = req.body.quantity
-    let stock = await Stock.findOne({ where: { productsizeId: product_size.id } })
-    if (!stock) return next(new AppError("Stock with that id not found", 404))
-    await stock.update(data)
-    await product_size.update(data)
-    const product = await Products.findOne({ where: { id: product_size.products.id } })
-    await product.update({ isDiscount })
-    return res.status(201).send({ product, product_size })
-})
 exports.editProductStatus = catchAsync(async(req, res, next) => {
     const product = await Products.findOne({
         where: { product_id: req.params.id },
@@ -421,6 +557,7 @@ exports.editProductStatus = catchAsync(async(req, res, next) => {
 
     return res.status(200).send(product);
 });
+
 exports.deleteProduct = catchAsync(async(req, res, next) => {
     const product_id = req.params.id;
     const product = await Products.findOne({
@@ -460,25 +597,6 @@ exports.deleteProduct = catchAsync(async(req, res, next) => {
     const stock = await Stock.findOne({ where: { productId: [product.id] } });
     await stock.destroy();
     await product.destroy();
-    return res.status(200).send('Successfully Deleted');
-});
-exports.deleteProductColor = catchAsync(async(req, res, next) => {
-    const productcolor_id = req.params.id;
-    let product_color = await Productcolor.findOne({ where: { productcolor_id } })
-    await product_color.destroy()
-    let product_size = await Productsizes.findAll({ where: { productcolorId: product_color.id } })
-    await product_size.destroy()
-    for (size of product_size) {
-        await size.destroy()
-    }
-    const images = await Images.findAll({ where: { productcolorId: product_color.id } })
-    for (const image of images) {
-        fs.unlink(`static/${image.image}`, function(err) {
-            if (err) throw err;
-        })
-        await image.destroy()
-    }
-    await stock.destroy();
     return res.status(200).send('Successfully Deleted');
 });
 exports.uploadProductImage = catchAsync(async(req, res, next) => {

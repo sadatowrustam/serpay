@@ -88,10 +88,6 @@ module.exports = (sequelize, DataTypes) => {
         discount: DataTypes.REAL,
         product_code: DataTypes.STRING,
         isActive: DataTypes.BOOLEAN,
-        isDiscount: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
-        },
         isNew: {
             type: DataTypes.BOOLEAN,
             defaultValue: true

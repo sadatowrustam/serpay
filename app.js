@@ -29,7 +29,8 @@ app.use('/public', require('./routes/public/publicRouter'));
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
-
+const socket = require('socket.io')({ cors: { origin: "*" } });
+app.set("socketio", socket)
 app.use(require('./controllers/errorController'));
 // const CryptoJS = require("crypto-js")
 // var ciphertext = CryptoJS.AES.encrypt('my message is bet', 'secret key 123').toString();

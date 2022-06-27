@@ -15,7 +15,7 @@ exports.verify_code = catchAsync(async(req, res, next) => {
         if (user) {
             return next(new AppError('This number has already signed as user', 400));
         }
-        const generated_code = randomstring({
+        const generated_code = randomstring.generate({
             length: 6,
             charset: "numeric"
         })
@@ -25,6 +25,7 @@ exports.verify_code = catchAsync(async(req, res, next) => {
             sms: 'Serpay tassyklaýyş koduňyz: ',
         };
         var io = req.app.get('socketio');
+        console.log(obj)
         io.emit("verification-phone", obj)
         res.status(200).json({
             id: generated_code,
@@ -85,7 +86,7 @@ exports.protect = catchAsync(async(req, res, next) => {
 
 exports.signup = catchAsync(async(req, res, next) => {
     if (req.body.user_checked_phone) {
-        const {
+        let {
             username,
             user_checked_phone,
             password,
