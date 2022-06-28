@@ -8,6 +8,10 @@ module.exports = {
                 primaryKey: true,
                 type: DataTypes.INTEGER
             },
+            history_id: {
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4
+            },
             userId: {
                 type: DataTypes.INTEGER
             },

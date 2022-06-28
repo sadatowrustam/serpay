@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
-const { Users, Address, Sharingusers, Products, Freeproducts } = require('../../models');
+const { Users, Address, Sharingusers, Freeproducts, Userhistory } = require('../../models');
 const { createSendToken } = require('./../../utils/createSendToken');
 
 exports.getMe = catchAsync(async(req, res, next) => {
@@ -72,7 +72,7 @@ exports.getAllAddress = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20
     const offset = req.query.offset
     const address = await Address.findAll({ where: { userId: req.user.id }, limit, offset })
-    return res.status(200).send(address)
+    return res.status(200).send({ address })
 })
 exports.editMyAddress = catchAsync(async(req, res, next) => {
     const address = await Address.findOne({ where: { address_id: req.params.id } })
@@ -93,14 +93,13 @@ exports.getAddress = catchAsync(async(req, res, next) => {
 })
 exports.addMyHistory = catchAsync(async(req, res, next) => {
     req.body.userId = req.user.id
-    req.body.product_id = req.body.product_id
-    let address = await Address.create(req.body)
+    let address = await Userhistory.create(req.body)
     return res.status(201).send(address)
 })
 exports.getAllHistory = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20
     const offset = req.query.offset
-    const address = await Address.findAll({
+    const user_history = await Userhistory.findAll({
         where: { userId: req.user.id },
         limit,
         offset,
@@ -108,12 +107,12 @@ exports.getAllHistory = catchAsync(async(req, res, next) => {
             ["id", "DESC"]
         ]
     })
-    return res.status(200).send(address)
+    return res.status(200).send(user_history)
 })
 exports.deleteMyHistory = catchAsync(async(req, res, next) => {
-    const address = await Address.findOne({ where: { address_id: req.params.id } })
-    if (!address) return next(new AppError("Address not found with that id", 404))
-    await address.destroy()
+    const user_history = await Userhistory.findOne({ where: { history_id: req.params.id } })
+    if (!user_history) return next(new AppError("User history not found with that id", 404))
+    await user_history.destroy()
     return res.status(200).send({ msg: "Success" })
 })
 exports.enterToCompetition = catchAsync(async(req, res, next) => {

@@ -35,17 +35,17 @@ router.patch('/forgot-password', verify_code_forgotten, forgotPassword);
 router.post('/signup', verify_code, signup);
 router.post('/login', login);
 router.post("/address", protect, addMyAddress)
-router.get("/address", getAllAddress)
-router.patch("/address/:id", editMyAddress)
-router.get("/address/:id", getAddress)
-router.delete("/address/:id", deleteMyAddress)
+router.get("/address", protect, getAllAddress)
+router.patch("/address/:id", protect, editMyAddress)
+router.get("/address/:id", getAllAddress, getAddress)
+router.delete("/address/:id", protect, deleteMyAddress)
 router.get('/my-account', protect, getMe);
 router.patch('/update-me', protect, updateMe);
 router.delete('/delete-me', protect, deleteMe);
 router.patch('/update-my-password', protect, updateMyPassword);
-router.post("/history", addMyHistory)
-router.get("/history", getAllHistory)
-router.delete("/history/:id", deleteMyHistory)
+router.post("/history", protect, addMyHistory)
+router.get("/history", protect, getAllHistory)
+router.delete("/history/:id", protect, deleteMyHistory)
 router.post('/my-cart', getMyCart);
 router.post("/to-my-cart", addMyCart)
 router.get('/my-orders', protect, getMyOrders);
