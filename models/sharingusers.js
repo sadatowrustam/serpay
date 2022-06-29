@@ -5,10 +5,14 @@ const {
 module.exports = (sequelize, DataTypes) => {
     class Sharingusers extends Model {
         static associate({ Users }) {
-            this.belongsTo(Users, { as: "user", foreignKey: "userID" })
+            this.belongsTo(Users, { as: "user", foreignKey: "userId" })
         }
     }
     Sharingusers.init({
+        sharinguser_id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4
+        },
         userId: DataTypes.INTEGER,
         freeproductId: DataTypes.INTEGER,
         count: {

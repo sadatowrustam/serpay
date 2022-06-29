@@ -1,26 +1,27 @@
 'use strict';
+
+
 module.exports = {
     async up(queryInterface, DataTypes) {
-        await queryInterface.createTable('sharingusers', {
+        await queryInterface.createTable('enteredusers', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: DataTypes.INTEGER
             },
-            sharinguser_id: {
+            entereduser_id: {
                 type: DataTypes.UUID,
                 defaultValue: DataTypes.UUIDV4
             },
-            userId: {
-                type: DataTypes.INTEGER
+            isEntered: {
+                type: DataTypes.BOOLEAN
             },
             freeproductId: {
                 type: DataTypes.INTEGER
             },
-            count: {
-                type: DataTypes.INTEGER,
-                defaultValue: 0
+            sharinguserId: {
+                type: DataTypes.INTEGER
             },
             createdAt: {
                 allowNull: false,
@@ -33,6 +34,6 @@ module.exports = {
         });
     },
     async down(queryInterface, DataTypes) {
-        await queryInterface.dropTable('sharingusers');
+        await queryInterface.dropTable('enteredusers');
     }
 };

@@ -18,19 +18,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4
         },
-        name_tm: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notNull: {
-                    msg: "Brand name cannot be null",
-                },
-                notEmpty: {
-                    msg: "Brand name cannot be empty",
-                },
-            },
-        },
-        name_ru: {
+        name: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {

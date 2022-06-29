@@ -125,10 +125,12 @@ exports.enterToCompetition = catchAsync(async(req, res, next) => {
     return res.status(201).send(sharing_user)
 })
 exports.addOne = catchAsync(async(req, res, next) => {
-    const sharing_user = await Sharingusers.findOne({ userId: req.user.id })
-    sharing_user.update({
+    const sharing_user = await Sharingusers.findOne({ sharinguser_id: req.body.sharinguser_id })
+
+    await sharing_user.update({
         count: sharing_user.count + 1
     })
+    console.log(req.headers["user-agent"])
     return res.status(200).send(sharing_user)
 })
 exports.deleteCompetitor = catchAsync(async(req, res, next) => {

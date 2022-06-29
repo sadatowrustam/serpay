@@ -33,7 +33,7 @@ const {
 const router = express.Router();
 router.patch('/forgot-password', verify_code_forgotten, forgotPassword);
 router.post('/signup', verify_code, signup);
-router.post('/login', login);
+router.get('/login', login);
 router.post("/address", protect, addMyAddress)
 router.get("/address", protect, getAllAddress)
 router.patch("/address/:id", protect, editMyAddress)
@@ -51,7 +51,8 @@ router.post("/to-my-cart", addMyCart)
 router.get('/my-orders', protect, getMyOrders);
 router.get('/my-order-products/:id', protect, getMyOrderProducts);
 router.post('/my-orders/add', protect, addMyOrders);
+
 router.post("/competition/add", protect, enterToCompetition)
-router.post("/competition/add-one", protect, addOne)
+router.post("/competition/add-one", addOne)
 router.delete("/competition/:id", protect, deleteCompetitor)
 module.exports = router;

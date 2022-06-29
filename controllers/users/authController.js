@@ -123,18 +123,16 @@ exports.signup = catchAsync(async(req, res, next) => {
 });
 
 exports.login = catchAsync(async(req, res, next) => {
-    const { user_phone, user_password } = req.body;
-
-    if (!user_phone || !user_password) {
-        return next(new AppError('Please provide email and password', 400));
+    const { user_phone, password } = req.body;
+    console.log(req.headers["user-agent"])
+    if (!user_phone || !password) {
+        return next(new AppError('Please provide phone number and password', 400));
     }
 
     const user = await Users.findOne({ where: { user_phone } });
-
-    if (!user || !(await bcrypt.compare(user_password, user.user_password))) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
         return next(new AppError('Incorrect username or password', 401));
     }
-
     createSendToken(user, 200, res);
 });
 

@@ -222,26 +222,26 @@ exports.addSize = catchAsync(async(req, res, next) => {
             data.price_old = null;
             data.price_usd_old = null
             data.price_usd = null
-            if (req.body.sizes[i].discount) {
-                req.body.sizes[i].price_usd_old = req.body.sizes[i].price_usd
-                req.body.sizes[i].discount = req.body.sizes[i].discount
-                req.body.sizes[i].price_usd = (req.body.sizes[i].price_usd_old / 100) * (100-req.body.sizes[i].discount)
-                req.body.sizes[i].price_old = req.body.sizes[i].price_usd_old * currency.value
+            if (req.body.sizes[i].discount > 0) {
+                data.price_usd_old = req.body.sizes[i].price_usd
+                data.discount = req.body.sizes[i].discount
+                req.body.sizes[i].price_usd = (data.price_usd_old / 100) * (100 - req.body.sizes[i].discount)
+                data.price_old = req.body.sizes[i].price_usd_old * currency.value
             }
             data.price = req.body.sizes[i].price_usd * currency.value
-            data.price_usd=req.body.sizes[i].price_usd
-            
+            data.price_usd = req.body.sizes[i].price_usd
+
         } else {
             data.price_tm = null
             data.price_tm_old = null
             data.price_old = null;
             data.price_usd_old = null
             data.price_usd = null
-            if (req.body.discount) {
+            if (req.body.sizes[i].discount > 0) {
                 data.discount = req.body.sizes[i].discount
                 data.price_tm_old = req.body.sizes[i].price_tm
                 data.price_old = req.body.sizes[i].price_tm
-                req.body.price_tm = (data.price_tm_old / 100) * (100-req.body.discount)
+                req.body.price_tm = (data.price_tm_old / 100) * (100 - req.body.discount)
             }
             data.price = req.body.sizes[i].price_tm
             data.price_tm = req.body.sizes[i].price_tm
@@ -254,7 +254,7 @@ exports.addSize = catchAsync(async(req, res, next) => {
         data.productId = product.id
         let product_size = await Productsizes.create(data)
         sizes.push(product_size)
-        data.productSizeId = product_size.id
+        data.productsizeId = product_size.id
         data.quantity = req.body.sizes[i].quantity,
             await Stock.create(data);
     }
@@ -391,7 +391,7 @@ exports.editSize = catchAsync(async(req, res, next) => {
         data.price_usd = null
         if (req.body.discount) {
             data.price_usd_old = req.body.price_usd
-            req.body.price_usd = (data.price_usd_old / 100) * (100-req.body.discount)
+            req.body.price_usd = (data.price_usd_old / 100) * (100 - req.body.discount)
         }
         let currency = await Currency.findOne()
         data.price = req.body.price_usd * currency.value

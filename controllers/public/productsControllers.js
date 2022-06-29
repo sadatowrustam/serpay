@@ -186,16 +186,10 @@ exports.discount = catchAsync(async(req, res, next) => {
     where = {
         isActive: true,
         [Op.or]: [{
-                discount: {
-                    [Op.ne]: 0
-                }
-            },
-            {
-                "$product_sizes.discount$": {
-                    [Op.ne]: 0
-                }
+            discount: {
+                [Op.ne]: 0
             }
-        ]
+        }]
     }
     if (sort == 1) {
         order = [
@@ -269,15 +263,15 @@ exports.actionProducts = catchAsync(async(req, res, next) => {
         order,
         limit,
         offset,
-        include:[{
-            model:Images,
-            as:"images"
-        },
-        {
-            model:Productsizes,
-            as:"product_sizes"
-        }
-    ]
+        include: [{
+                model: Images,
+                as: "images"
+            },
+            {
+                model: Productsizes,
+                as: "product_sizes"
+            }
+        ]
     });
     return res.status(200).send({ action_products })
 })
