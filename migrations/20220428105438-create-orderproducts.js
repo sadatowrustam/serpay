@@ -14,7 +14,6 @@ module.exports = {
             },
             orderId: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
             },
             productId: {
                 type: DataTypes.STRING,
@@ -28,7 +27,8 @@ module.exports = {
                 type: DataTypes.BOOLEAN,
             },
             is_ordered: {
-                type: DataTypes.BOOLEAN
+                type: DataTypes.BOOLEAN,
+                defaultValue: false
             },
             quantity: {
                 type: DataTypes.REAL,
@@ -44,6 +44,13 @@ module.exports = {
             },
             size: {
                 type: DataTypes.STRING,
+            },
+            image: {
+                type: DataTypes.STRING
+            },
+            isSelected: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false
             },
             createdAt: {
                 allowNull: false,

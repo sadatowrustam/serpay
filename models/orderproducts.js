@@ -20,10 +20,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         orderId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
         },
         productId: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false,
         },
         userId: {
@@ -46,8 +45,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        isSeleсted: DataTypes.BOOLEAN,
-        is_ordered: DataTypes.STRING,
+        isSelected: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
+        is_ordered: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
         size: {
             type: DataTypes.STRING,
             defaultValue: "-"

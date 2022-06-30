@@ -33,7 +33,7 @@ const {
 const router = express.Router();
 router.patch('/forgot-password', verify_code_forgotten, forgotPassword);
 router.post('/signup', verify_code, signup);
-router.get('/login', login);
+router.post('/login', login);
 router.post("/address", protect, addMyAddress)
 router.get("/address", protect, getAllAddress)
 router.patch("/address/:id", protect, editMyAddress)
@@ -47,7 +47,7 @@ router.post("/history", protect, addMyHistory)
 router.get("/history", protect, getAllHistory)
 router.delete("/history/:id", protect, deleteMyHistory)
 router.post('/my-cart', getMyCart);
-router.post("/to-my-cart", addMyCart)
+router.post("/to-my-cart", protect, addMyCart)
 router.get('/my-orders', protect, getMyOrders);
 router.get('/my-order-products/:id', protect, getMyOrderProducts);
 router.post('/my-orders/add', protect, addMyOrders);
