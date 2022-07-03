@@ -1,9 +1,9 @@
 const bcrypt = require('bcryptjs');
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
-const { Users, Address, Sharingusers, Freeproducts, Userhistory } = require('../../models');
+const { Users, Address, Sharingusers, Freeproducts, Userhistory, Enteredusers } = require('../../models');
 const { createSendToken } = require('./../../utils/createSendToken');
-
+const { Op } = require("sequelize")
 exports.getMe = catchAsync(async(req, res, next) => {
     return res.status(200).send(req.user);
 });
@@ -126,15 +126,26 @@ exports.enterToCompetition = catchAsync(async(req, res, next) => {
 })
 exports.addOne = catchAsync(async(req, res, next) => {
     const sharing_user = await Sharingusers.findOne({ sharinguser_id: req.body.sharinguser_id })
-
-    await sharing_user.update({
-        count: sharing_user.count + 1
+    if (!sharing_user) return next(new AppError("Sharing user with that id not found"), 404)
+    const freeproduct = await Freeproducts.findOne({ where: { freeproduct_id: req.body.freeproduct_id } })
+    if (!freeproduct) return next(new AppError("Free product with that id not found"), 404)
+    const entered_user = await Enteredusers.findOne({
+        where: {
+            [Op.and]: [{ sharinguserId: sharing_user.id }, { isEntered: true }, { freeproductId: freeproduct.id }, { entereduserId: req.user.id }]
+        }
     })
-    console.log(req.headers["user-agent"])
-    return res.status(200).send(sharing_user)
+    if (!entered_user) {
+        var new_entered_user = await Enteredusers.create({ sharinguserId: sharing_user.id, isEntered: true, freeproductId: freeproduct.id, entereduserId: req.user.id })
+        await sharing_user.update({
+            count: sharing_user.count + 1
+        })
+    }
+
+    return res.status(200).send({ sharing_user, new_entered_user })
 })
 exports.deleteCompetitor = catchAsync(async(req, res, next) => {
     const sharing_user = await Sharingusers.findOne({ where: { userId: req.user.id, freeproductId: req.params.id } })
+
     sharing_user.destroy()
     return res.status(200).send({ msg: "Successfully deleted" })
 })

@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const signToken = (id) => {
     return jwt.sign({ id }, 'rustam', {
 
-        expiresIn: '24h',
+        expiresIn: '90d',
     });
 };
 
