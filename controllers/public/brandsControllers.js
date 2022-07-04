@@ -58,9 +58,14 @@ exports.getBrandProducts = catchAsync(async(req, res, next) => {
         limit,
         offset,
         include: [{
-            model: Images,
-            as: "images"
-        }]
+                model: Images,
+                as: "images"
+            },
+            {
+                model: Productsizes,
+                as: "product_sizes"
+            }
+        ]
     });
     const count = await Products.count({ where: { brandId: brand.id } })
     return res.status(200).send({ products, count });

@@ -25,27 +25,8 @@ const fieldsForPublic = [
 ];
 exports.getProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
-    const { offset, sort, category_name, brand_name } = req.query;
+    const { offset } = req.query;
     var order, where;
-    if (sort == 1) {
-        order = [
-            ['price', 'DESC']
-        ];
-    } else if (sort == 0) {
-        order = [
-            ['price', 'ASC']
-        ];
-    } else order = [
-        ['updatedAt', 'DESC']
-    ];
-    if (category_name) {
-        const category = await Categories.findOne({ where: { name_tm: category_name } })
-        where.categoryId = category.id
-    }
-    if (brand_name) {
-        const brand = await Brands.findOne({ where: { name_tm: brand_name } })
-        where.brandId = brand.id
-    }
     const products = await Products.findAll({
         isActive: true,
         order,
@@ -54,7 +35,7 @@ exports.getProducts = catchAsync(async(req, res) => {
         include,
         where
     });
-    return res.status(200).json(newProducts);
+    return res.status(200).json(products);
 });
 
 // Search
@@ -181,7 +162,7 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
 })
 exports.discount = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
-    const { offset, sort, brand_name, category_name } = req.query;
+    const { offset, sort, brand_id, category_id } = req.query;
     let order, where;
     where = {
         isActive: true,
@@ -202,12 +183,14 @@ exports.discount = catchAsync(async(req, res, next) => {
     } else order = [
         ['updatedAt', 'DESC']
     ];
-    if (category_name) {
-        const category = await Categories.findOne({ where: { name_tm: category_name } })
+    order.push(["images", "id", "DESC"])
+
+    if (category_id) {
+        const category = await Categories.findOne({ where: { category_id } })
         where.categoryId = category.id
     }
-    if (brand_name) {
-        const brand = await Brands.findOne({ where: { name_tm: brand_name } })
+    if (brand_id) {
+        const brand = await Brands.findOne({ where: { brand_id } })
         where.brandId = brand.id
     }
     const discount_products = await Products.findAll({
@@ -222,7 +205,6 @@ exports.discount = catchAsync(async(req, res, next) => {
             {
                 model: Productsizes,
                 as: "product_sizes",
-                // attributes: ["discount","size",""]
             }
         ],
     });
@@ -230,7 +212,7 @@ exports.discount = catchAsync(async(req, res, next) => {
 })
 exports.actionProducts = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
-    const { offset, sort, brand_name, category_name } = req.query;
+    const { offset, sort, brand_id, category_id } = req.query;
     let order, where;
     where = {
         isActive: true,
@@ -239,23 +221,21 @@ exports.actionProducts = catchAsync(async(req, res, next) => {
     if (sort == 1) {
         order = [
             ['price', 'DESC'],
-            ["product_sizes", "price", "DESC"]
         ];
     } else if (sort == 0) {
         order = [
             ['price', 'ASC'],
-            ['product_sizes', "price", "ASC"]
         ];
     } else order = [
         ['updatedAt', 'DESC']
     ];
     order.push(["images", "id", "DESC"])
-    if (category_name) {
-        const category = await Categories.findOne({ where: { name_tm: category_name } })
+    if (category_id) {
+        const category = await Categories.findOne({ where: { category_id } })
         where.categoryId = category.id
     }
-    if (brand_name) {
-        const brand = await Brands.findOne({ where: { name_tm: brand_name } })
+    if (brand_id) {
+        const brand = await Brands.findOne({ where: { brand_id } })
         where.brandId = brand.id
     }
     const action_products = await Products.findAll({
@@ -275,43 +255,7 @@ exports.actionProducts = catchAsync(async(req, res, next) => {
     });
     return res.status(200).send({ action_products })
 })
-exports.giftProducts = catchAsync(async(req, res, next) => {
-    const limit = req.query.limit || 20;
-    const { offset, sort, brand_name, category_name } = req.query;
-    let order, where;
-    where = {
-        isActive: true,
-        isGift: true
-    }
-    if (sort == 1) {
-        order = [
-            ['price', 'DESC']
-        ];
-    } else if (sort == 0) {
-        order = [
-            ['price', 'ASC']
-        ];
-    } else order = [
-        ['updatedAt', 'DESC']
-    ];
-    if (category_name) {
-        const category = await Categories.findOne({ where: { name_tm: category_name } })
-        where.categoryId = category.id
-    }
-    if (brand_name) {
-        const brand = await Brands.findOne({ where: { name_tm: brand_name } })
-        where.brandId = brand.id
-    }
-    const gift_products = await Products.findAll({
-        where,
-        attributes: fieldsForPublic,
-        order,
-        limit,
-        offset,
-        include
-    });
-    return res.status(200).send({ gift_products })
-})
+
 exports.newProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const offset = req.query.offset || 0;
@@ -320,19 +264,17 @@ exports.newProducts = catchAsync(async(req, res) => {
     if (sort == 1) {
         order = [
             ['price', 'DESC'],
-            ["product_sizes", "price", "DESC"]
         ];
     } else if (sort == 0) {
         order = [
             ['price', 'ASC'],
-            ['product_sizes', "price", "ASC"]
         ];
     } else order = [
         ['updatedAt', 'DESC']
     ];
     order.push(["images", "id", "DESC"])
     where = {
-        // isActive: true,
+        isActive: true,
         isNew: true
     }
     if (isAction && isAction != "undefined") {

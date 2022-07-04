@@ -17,7 +17,8 @@ exports.getAllCategories = catchAsync(async(req, res) => {
         limit,
         offset,
         order: [
-            ['id', 'ASC']
+            ['id', 'ASC'],
+            ["subcategories", "createdAt", "DESC"],
         ],
         include: {
             model: Subcategories,
@@ -51,7 +52,7 @@ exports.getCategoryProducts = catchAsync(async(req, res, next) => {
     } else order = [
         ['updatedAt', 'DESC']
     ];
-
+    order.push(["images", "id", "DESC"])
     const products = await Products.findAll({
         where: { categoryId: category.id }, //isActive goy sonundan
         order,
@@ -64,26 +65,4 @@ exports.getCategoryProducts = catchAsync(async(req, res, next) => {
     });
     const count = await Products.count({ where: { categoryId: category.id } })
     return res.status(200).send({ products, count });
-});
-exports.getVip = catchAsync(async(req, res) => {
-    const limit = req.query.limit || 20;
-    const offset = req.query.offset;
-
-    const categories = await Categories.findAll({
-        where: { isVip: true },
-        limit: 4,
-        order: [
-            ['id', 'ASC']
-        ],
-        include: {
-            model: Products,
-            as: "category_products",
-            include: {
-                model: Stock,
-                as: "product_stock"
-            }
-        },
-    });
-
-    return res.status(200).json(categories);
 });

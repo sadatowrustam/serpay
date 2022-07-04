@@ -23,7 +23,7 @@ exports.getSubcategoryProducts = catchAsync(async(req, res, next) => {
     } else order = [
         ['updatedAt', 'DESC']
     ];
-
+    order.push(["image", "id", "DESC"])
     const products = await Products.findAll({
         where: { subcategoryId: subcategory.id }, //isActive goy
         order,

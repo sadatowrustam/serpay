@@ -51,7 +51,6 @@ router.post("/to-my-cart", protect, addMyCart)
 router.get('/my-orders', protect, getMyOrders);
 router.get('/my-order-products/:id', protect, getMyOrderProducts);
 router.post('/my-orders/add', protect, addMyOrders);
-
 router.post("/competition/add", protect, enterToCompetition)
 router.post("/competition/add-one", protect, addOne)
 router.delete("/competition/:id", protect, deleteCompetitor)

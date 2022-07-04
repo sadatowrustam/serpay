@@ -4,11 +4,12 @@ const {
     getOneProduct,
     discount,
     newProducts,
-    actionProducts
+    actionProducts,
+    getProducts
 } = require('../../../controllers/public/productsControllers');
 
 const router = express.Router();
-router.get("/")
+router.get("/", getProducts)
 router.get('/search', searchProducts);
 router.get("/discount", discount)
 router.get("/new", newProducts)
