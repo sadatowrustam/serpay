@@ -12,6 +12,7 @@ const {
     addMyOrders,
     getMyOrders,
     getMyOrderProducts,
+    getNotOrderedProducts
 } = require('../../controllers/users/ordersControllers');
 const {
     getMe,
@@ -28,7 +29,8 @@ const {
     deleteMyHistory,
     enterToCompetition,
     addOne,
-    deleteCompetitor
+    deleteCompetitor,
+
 } = require('../../controllers/users/usersControllers');
 const router = express.Router();
 router.patch('/forgot-password', verify_code_forgotten, forgotPassword);
@@ -37,7 +39,7 @@ router.post('/login', login);
 router.post("/address", protect, addMyAddress)
 router.get("/address", protect, getAllAddress)
 router.patch("/address/:id", protect, editMyAddress)
-router.get("/address/:id", getAllAddress, getAddress)
+router.get("/address/:id", protect, getAddress)
 router.delete("/address/:id", protect, deleteMyAddress)
 router.get('/my-account', protect, getMe);
 router.patch('/update-me', protect, updateMe);
@@ -50,6 +52,7 @@ router.post('/my-cart', getMyCart);
 router.post("/to-my-cart", protect, addMyCart)
 router.get('/my-orders', protect, getMyOrders);
 router.get('/my-order-products/:id', protect, getMyOrderProducts);
+router.get("/not-ordered", protect, getNotOrderedProducts)
 router.post('/my-orders/add', protect, addMyOrders);
 router.post("/competition/add", protect, enterToCompetition)
 router.post("/competition/add-one", protect, addOne)

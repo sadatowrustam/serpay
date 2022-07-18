@@ -8,7 +8,6 @@ const signToken = (id) => {
 };
 
 exports.createSendToken = (user, statusCode, res) => {
-    console.log(user)
     const token = signToken(user.user_id);
     user.password = undefined;
 

@@ -12,6 +12,9 @@ module.exports = {
                 type: DataTypes.UUID,
                 defaultValue: DataTypes.UUIDV4
             },
+            welayat: {
+                type: DataTypes.STRING
+            },
             address: {
                 type: DataTypes.STRING
             },

@@ -1,7 +1,7 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
-const { Users, Address, Sharingusers, Freeproducts, Userhistory, Enteredusers } = require('../../models');
+const { Users, Address, Sharingusers, Freeproducts, Userhistory, Enteredusers, Products, Images } = require('../../models');
 const { createSendToken } = require('./../../utils/createSendToken');
 const { Op } = require("sequelize")
 exports.getMe = catchAsync(async(req, res, next) => {
@@ -18,7 +18,6 @@ exports.updateMyPassword = catchAsync(async(req, res, next) => {
                 400
             )
         );
-
     if (newPassword != newPasswordConfirm || newPassword.length < 6)
         return next(
             new AppError(
@@ -29,10 +28,9 @@ exports.updateMyPassword = catchAsync(async(req, res, next) => {
 
     const user = await Users.findOne({ where: { user_id: [req.user.user_id] } });
 
-    if (!(await bcrypt.compare(currentPassword, user.user_password))) {
+    if (!(await bcrypt.compare(currentPassword, user.password))) {
         return next(new AppError('Your current password is wrong', 401));
     }
-
     user.password = await bcrypt.hash(newPassword, 12);
     await user.save();
 
@@ -40,17 +38,21 @@ exports.updateMyPassword = catchAsync(async(req, res, next) => {
 });
 
 exports.updateMe = catchAsync(async(req, res, next) => {
-    const { username, user_address } = req.body;
-    if (!username || !user_address)
+    const { username, nickname, } = req.body;
+    if (!username || !nickname)
         return next(new AppError('Invalid credentials', 400));
 
     const user = await Users.findOne({ where: { user_id: [req.user.user_id] } });
 
+    const has_username = await Users.findOne({ where: { nickname } })
+
+    if (has_username) {
+        if (has_username.user_id != req.user.user_id) return next(new AppError("This nickname is already taken"))
+    }
     await user.update({
         username,
-        user_address,
+        nickname
     });
-
     createSendToken(user, 200, res);
 });
 
@@ -93,8 +95,11 @@ exports.getAddress = catchAsync(async(req, res, next) => {
 })
 exports.addMyHistory = catchAsync(async(req, res, next) => {
     req.body.userId = req.user.id
+    const product = await Products.findOne({ where: { product_id: req.body.product_id } })
+    req.body.productId = product.id
     let address = await Userhistory.create(req.body)
     return res.status(201).send(address)
+
 })
 exports.getAllHistory = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20
@@ -105,7 +110,15 @@ exports.getAllHistory = catchAsync(async(req, res, next) => {
         offset,
         sort: [
             ["id", "DESC"]
-        ]
+        ],
+        include: {
+            model: Products,
+            as: "product",
+            include: {
+                model: Images,
+                as: "images"
+            }
+        }
     })
     return res.status(200).send(user_history)
 })

@@ -11,6 +11,9 @@ module.exports = {
             total_price: {
                 type: DataTypes.REAL
             },
+            userId: {
+                type: DataTypes.INTEGER
+            },
             total_quantity: {
                 type: DataTypes.INTEGER
             },

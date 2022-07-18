@@ -1,7 +1,7 @@
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
 const { Products, Orders, Orderproducts, Productsizes, Productcolor } = require('../../models');
-
+const { Op } = require("sequelize")
 exports.addMyOrders = catchAsync(async(req, res, next) => {
     var {
         userId,
@@ -82,9 +82,13 @@ exports.addMyOrders = catchAsync(async(req, res, next) => {
 exports.getMyOrders = catchAsync(async(req, res, next) => {
     const limit = req.query.limit || 20;
     const offset = req.query.offset;
-
+    const { status } = req.body
+    var where = {
+        userId: req.user.id
+    }
+    if (status) where.status = status
     const orders = await Orders.findAll({
-        where: { userId: req.user.id },
+        where,
         order: [
             ['updatedAt', 'DESC']
         ],
@@ -155,3 +159,7 @@ exports.getMyOrderProducts = catchAsync(async(req, res, next) => {
 
     res.status(200).send(orderProducts);
 });
+exports.getNotOrderedProducts = catchAsync(async(req, res, next) => {
+    const order_products = await Orderproducts.findAll({ where: { userId: req.user.id, is_ordered: false } })
+    return res.status(200).send({ order_products })
+})

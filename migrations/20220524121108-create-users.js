@@ -15,6 +15,9 @@ module.exports = {
             username: {
                 type: DataTypes.STRING
             },
+            nickname: {
+                type: DataTypes.STRING
+            },
             user_phone: {
                 type: DataTypes.STRING
             },

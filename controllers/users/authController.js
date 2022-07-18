@@ -43,12 +43,15 @@ exports.verify_code_forgotten = catchAsync(async(req, res, next) => {
             return next(new AppError('This number has not signed as user', 400));
         }
 
-        const generated_code = Math.floor(100000 + Math.random() * 900000);
+        const generated_code = randomstring.generate({
+            length: 6,
+            charset: "numeric"
+        })
 
         const obj = {
             code: generated_code,
             number: user_phone,
-            sms: 'Sebet tassyklaýyş koduňyz: ' + generated_code,
+            sms: 'Serpay tassyklaýyş koduňyz: ' + generated_code,
 
         }
         var io = req.app.get('socketio');
@@ -91,6 +94,7 @@ exports.signup = catchAsync(async(req, res, next) => {
             user_checked_phone,
             password,
             passwordConfirm,
+            nickname
         } = req.body;
 
         if (password.length < 6)
@@ -107,11 +111,13 @@ exports.signup = catchAsync(async(req, res, next) => {
         if (user) {
             return next(new AppError('This number has already registered', 400));
         }
-
+        const has_username = await Users.findOne({ where: { nickname } })
+        if (has_username) return next(new AppError("This nickname is already taken"))
         const newUser = await Users.create({
             username,
             user_phone: user_checked_phone,
             password,
+            nickname
         });
 
         createSendToken(newUser, 201, res);

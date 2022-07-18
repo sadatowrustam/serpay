@@ -15,8 +15,8 @@ module.exports = {
             userId: {
                 type: DataTypes.INTEGER
             },
-            product_id: {
-                type: DataTypes.STRING
+            productId: {
+                type: DataTypes.INTEGER
             },
             createdAt: {
                 allowNull: false,
