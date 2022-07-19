@@ -37,7 +37,33 @@ exports.getProducts = catchAsync(async(req, res) => {
     });
     return res.status(200).json(products);
 });
+exports.getTopProducts = catchAsync(async(req, res) => {
+    const limit = req.query.limit || 10;
+    const { offset } = req.query;
+    var order, where;
+    const products = await Products.findAll({
+        isActive: true,
+        limit,
+        offset,
+        include,
 
+    });
+    return res.status(200).json(products);
+});
+exports.getLikedProducts = catchAsync(async(req, res) => {
+    const limit = req.query.limit || 10;
+    const { offset } = req.query;
+    var order, where;
+    const products = await Products.findAll({
+        isActive: true,
+        order,
+        limit,
+        offset,
+        include,
+        where
+    });
+    return res.status(200).json(products);
+});
 // Search
 const capitalize = function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);

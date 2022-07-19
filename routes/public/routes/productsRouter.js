@@ -5,11 +5,15 @@ const {
     discount,
     newProducts,
     actionProducts,
-    getProducts
+    getProducts,
+    getLikedProducts,
+    getTopProducts
 } = require('../../../controllers/public/productsControllers');
 
 const router = express.Router();
 router.get("/", getProducts)
+router.get("/topProducts", getTopProducts)
+router.get("/liked", getLikedProducts)
 router.get('/search', searchProducts);
 router.get("/discount", discount)
 router.get("/new", newProducts)
