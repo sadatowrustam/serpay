@@ -106,6 +106,10 @@ module.exports = {
                 type: DataTypes.INTEGER,
                 defaultValue: 0
             },
+            likeCount: {
+                type: DataTypes.INTEGER,
+                defaultValue: 0
+            },
             isNew: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: true

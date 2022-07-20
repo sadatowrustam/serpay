@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const AppError = require('../../utils/appError');
 const catchAsync = require('../../utils/catchAsync');
-const { Users, Address, Sharingusers, Freeproducts, Userhistory, Enteredusers, Products, Images } = require('../../models');
+const { Users, Address, Sharingusers, Freeproducts, Userhistory, Enteredusers, Products, Images, Likedproducts } = require('../../models');
 const { createSendToken } = require('./../../utils/createSendToken');
 const { Op } = require("sequelize")
 exports.getMe = catchAsync(async(req, res, next) => {
@@ -161,4 +161,48 @@ exports.deleteCompetitor = catchAsync(async(req, res, next) => {
 
     sharing_user.destroy()
     return res.status(200).send({ msg: "Successfully deleted" })
+})
+exports.likeProduct = catchAsync(async(req, res, next) => {
+    console.log(req.body)
+    const product = await Products.findOne({ where: { product_id: req.body.product_id } })
+    if (!product) return next(new AppError("Product with that id not found"))
+    const liked_product = await Likedproducts.create({ userId: req.user.id, productId: product.id })
+    await product.update({ likeCount: product.likeCount + 1 })
+    return res.status(200).send({ liked_product, product })
+})
+exports.dislikeProduct = catchAsync(async(req, res, next) => {
+    console.log(req.body)
+    const product = await Products.findOne({ where: { product_id: req.params.id } })
+    if (!product) return next(new AppError("Product with that id not found", 404))
+    const liked_product = await Likedproducts.findOne({ where: { productId: product.id, userId: req.user.id } })
+    if (!liked_product) return next(new AppError("Liked product with that id not found", 404))
+    await liked_product.destroy()
+    await product.update({ likeCount: product.likeCount - 1 })
+    return res.status(200).send({ msg: "Success" })
+})
+exports.getLikedProducts = catchAsync(async(req, res, next) => {
+    console.log(req.body)
+    const limit = req.query.limit || 20
+    const offset = req.query.offset || 0
+    const { sort } = req.query
+    if (sort == 1) var order = [
+        ["price", "DESC"]
+    ]
+    else if (sort == 2) var order = [
+        ["price", "ASC"]
+    ]
+    else var order = [
+        ["updatedAt", "DESC"]
+    ]
+    const liked_product = await Products.findAll({
+        limit,
+        offset,
+        order,
+        include: {
+            model: Users,
+            as: "liked_users",
+        }
+
+    })
+    return res.status(200).send({ liked_product })
 })

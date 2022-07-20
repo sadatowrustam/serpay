@@ -30,7 +30,9 @@ const {
     enterToCompetition,
     addOne,
     deleteCompetitor,
-
+    likeProduct,
+    dislikeProduct,
+    getLikedProducts
 } = require('../../controllers/users/usersControllers');
 const router = express.Router();
 router.patch('/forgot-password', verify_code_forgotten, forgotPassword);
@@ -57,4 +59,7 @@ router.post('/my-orders/add', protect, addMyOrders);
 router.post("/competition/add", protect, enterToCompetition)
 router.post("/competition/add-one", protect, addOne)
 router.delete("/competition/:id", protect, deleteCompetitor)
+router.get("/like", protect, getLikedProducts)
+router.post("/like", protect, likeProduct)
+router.delete("/like/:id", protect, dislikeProduct)
 module.exports = router;

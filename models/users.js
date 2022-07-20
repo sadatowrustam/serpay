@@ -5,11 +5,12 @@ const {
 module.exports = (sequelize, DataTypes) => {
     class Users extends Model {
 
-        static associate({ Orderproducts, Address, Userhistory, Sharingusers }) {
+        static associate({ Orderproducts, Address, Userhistory, Sharingusers, Products }) {
             this.hasMany(Orderproducts, { foreignKey: "userId", as: "user_order_products" })
             this.hasMany(Address, { foreignKey: "userId", as: "user_address" })
             this.hasMany(Userhistory, { foreignKey: "userId", as: "user_history" })
             this.hasMany(Sharingusers, { foreignKey: "userId", as: "shares" })
+            this.belongsToMany(Products, { through: "Likedproducts", as: "liked_products", foreignKey: "productId" })
         }
     }
     Users.init({
