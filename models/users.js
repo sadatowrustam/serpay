@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
             this.hasMany(Address, { foreignKey: "userId", as: "user_address" })
             this.hasMany(Userhistory, { foreignKey: "userId", as: "user_history" })
             this.hasMany(Sharingusers, { foreignKey: "userId", as: "shares" })
-            this.belongsToMany(Products, { through: "Likedproducts", as: "liked_products", foreignKey: "productId" })
+            this.belongsToMany(Products, { through: "Likedproducts", as: "liked_products", foreignKey: "userId" })
         }
     }
     Users.init({

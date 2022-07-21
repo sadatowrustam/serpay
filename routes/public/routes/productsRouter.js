@@ -12,7 +12,7 @@ const {
 
 const router = express.Router();
 router.get("/", getProducts)
-router.get("/topProducts", getTopProducts)
+router.get("/top", getTopProducts)
 router.get("/liked", getLikedProducts)
 router.get('/search', searchProducts);
 router.get("/discount", discount)

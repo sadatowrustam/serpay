@@ -42,17 +42,36 @@ exports.addMyCart = catchAsync(async(req, res, next) => {
         orderProductData.size = productsize.size
         orderProductData.quantity = quantity
         orderProductData.total_price = quantity * productsize.price
-        orderProductData.userId = req.user.id
-        orderProductData.is_ordered = false
+
     } else if (product_id) {
-        let product = await Products.findOne({ where: { product_id }, include: { model: Stock, as: "product_stock" } })
+        let product = await Products.findOne({
+            where: { product_id },
+            include: [{
+                    model: Stock,
+                    as: "product_stock",
+                    where: { productsizeId: null }
+                },
+                {
+                    model: Images,
+                    as: "images",
+                    order: [
+                        ["updatedAt", "DESC"]
+                    ],
+                    limit: 1
+                }
+            ]
+        })
         if (!product) return next(new AppError("Product not found with that id", 404))
-        if (quantity > product.stock.quantity) {
-            quantity = product.stock.quantity
+        if (quantity > product.product_stock[0].quantity) {
+            quantity = product.product_stock[0].quantity
         }
         orderProductData.price = product.price
-
+        orderProductData.total_price = product.price * quantity
+        orderProductData.quantity = quantity
+        orderProductData.image = product.images[0].image
     }
+    orderProductData.userId = req.user.id
+    orderProductData.is_ordered = false
     orderProductData.productId = product.id
     console.log(orderProductData)
     const order_product = await Orderproducts.create(orderProductData)

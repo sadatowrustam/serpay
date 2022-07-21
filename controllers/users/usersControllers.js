@@ -194,15 +194,13 @@ exports.getLikedProducts = catchAsync(async(req, res, next) => {
     else var order = [
         ["updatedAt", "DESC"]
     ]
-    const liked_product = await Products.findAll({
-        limit,
-        offset,
-        order,
+    const liked_product = await Users.findOne({
+        where: { user_id: req.user.user_id },
         include: {
-            model: Users,
-            as: "liked_users",
+            model: Products,
+            as: "liked_products",
         }
 
     })
-    return res.status(200).send({ liked_product })
+    return res.status(200).send({ liked_product: liked_product.liked_products })
 })

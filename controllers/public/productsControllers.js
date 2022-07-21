@@ -56,10 +56,11 @@ exports.getLikedProducts = catchAsync(async(req, res) => {
     var order, where;
     const products = await Products.findAll({
         isActive: true,
-        order,
+        order: [
+            ["likeCount", "DESC"]
+        ],
         limit,
         offset,
-        include,
         where
     });
     return res.status(200).json(products);

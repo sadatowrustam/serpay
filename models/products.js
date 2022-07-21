@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
             this.hasMany(Productsizes, { foreignKey: "productId", as: "product_sizes" })
             this.belongsTo(Brands, { foreignKey: "brandId", as: "brand" })
             this.hasMany(Userhistory, { foreignKey: "productId", as: "userhistory" })
-            this.belongsToMany(Users, { through: "Likedproducts", as: "liked_users", foreignKey: "userId" })
+            this.belongsToMany(Users, { through: "Likedproducts", as: "liked_users", foreignKey: "productId" })
         }
     }
     Products.init({

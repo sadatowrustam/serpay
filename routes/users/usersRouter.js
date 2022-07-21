@@ -12,7 +12,8 @@ const {
     addMyOrders,
     getMyOrders,
     getMyOrderProducts,
-    getNotOrderedProducts
+    getNotOrderedProducts,
+    select
 } = require('../../controllers/users/ordersControllers');
 const {
     getMe,
@@ -32,7 +33,7 @@ const {
     deleteCompetitor,
     likeProduct,
     dislikeProduct,
-    getLikedProducts
+    getLikedProducts,
 } = require('../../controllers/users/usersControllers');
 const router = express.Router();
 router.patch('/forgot-password', verify_code_forgotten, forgotPassword);
@@ -50,7 +51,8 @@ router.patch('/update-my-password', protect, updateMyPassword);
 router.post("/history", protect, addMyHistory)
 router.get("/history", protect, getAllHistory)
 router.delete("/history/:id", protect, deleteMyHistory)
-router.post('/my-cart', getMyCart);
+router.get('/my-cart', protect, getMyCart);
+router.post("/my-cart/select/:id", protect, select)
 router.post("/to-my-cart", protect, addMyCart)
 router.get('/my-orders', protect, getMyOrders);
 router.get('/my-order-products/:id', protect, getMyOrderProducts);
