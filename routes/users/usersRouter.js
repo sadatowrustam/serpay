@@ -34,6 +34,7 @@ const {
     likeProduct,
     dislikeProduct,
     getLikedProducts,
+    uploadUserImage,
 } = require('../../controllers/users/usersControllers');
 const router = express.Router();
 router.patch('/forgot-password', verify_code_forgotten, forgotPassword);
@@ -47,6 +48,7 @@ router.delete("/address/:id", protect, deleteMyAddress)
 router.get('/my-account', protect, getMe);
 router.patch('/update-me', protect, updateMe);
 router.delete('/delete-me', protect, deleteMe);
+router.post("/upload-image", protect, uploadUserImage)
 router.patch('/update-my-password', protect, updateMyPassword);
 router.post("/history", protect, addMyHistory)
 router.get("/history", protect, getAllHistory)

@@ -4,6 +4,7 @@ const catchAsync = require('../../utils/catchAsync');
 const { Users, Address, Sharingusers, Freeproducts, Userhistory, Enteredusers, Products, Images, Likedproducts } = require('../../models');
 const { createSendToken } = require('./../../utils/createSendToken');
 const { Op } = require("sequelize")
+const sharp = require("sharp")
 exports.getMe = catchAsync(async(req, res, next) => {
     return res.status(200).send(req.user);
 });
@@ -204,3 +205,19 @@ exports.getLikedProducts = catchAsync(async(req, res, next) => {
     })
     return res.status(200).send({ liked_product: liked_product.liked_products })
 })
+exports.uploadUserImage = catchAsync(async(req, res, next) => {
+    const user_id = req.user.user_id;
+    const user = await Users.findOne({ where: { user_id } });
+    req.files = Object.values(req.files)
+    if (!user)
+        return next(new AppError('User did not found with that ID', 404));
+    const image = `${user_id}_user.webp`;
+    const photo = req.files[0].data
+    let buffer = await sharp(photo).webp().toBuffer()
+    await sharp(buffer).toFile(`static/${image}`);
+    await user.update({
+        image
+    });
+    return res.status(201).send(user)
+
+});

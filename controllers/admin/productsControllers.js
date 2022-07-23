@@ -165,8 +165,6 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
     return res.send(oneProduct)
 })
 exports.addColor = catchAsync(async(req, res, next) => {
-    var sizes = []
-    let data = {}
     const color_id = req.body.color_id
     const product = await Products.findOne({ where: { product_id: req.params.id } })
     const color = await Colors.findOne({ where: { color_id } })
@@ -226,8 +224,8 @@ exports.addSize = catchAsync(async(req, res, next) => {
         let product_size = await Productsizes.create(data)
         sizes.push(product_size)
         data.productsizeId = product_size.id
-        data.quantity = req.body.sizes[i].quantity,
-            await Stock.create(data);
+        data.quantity = req.body.sizes[i].quantity
+        await Stock.create(data);
     }
     return res.status(201).send(sizes)
 })

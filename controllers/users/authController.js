@@ -153,14 +153,13 @@ exports.forgotPassword = catchAsync(async(req, res, next) => {
                     400
                 )
             );
-
         const user = await Users.findOne({
             where: { user_phone: user_checked_phone },
         });
         if (!user) return next(new AppError('User not found', 404));
 
-        user.user_password = await bcrypt.hash(newPassword, 12);
-        await user.save();
+        const password = await bcrypt.hash(newPassword, 12);
+        await user.update({ password });
 
         createSendToken(user, 200, res);
     } else {

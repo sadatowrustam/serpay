@@ -1,5 +1,4 @@
 const { Op } = require('sequelize');
-const appError = require('../../utils/appError')
 const {
     Products,
     Categories,
@@ -7,22 +6,11 @@ const {
     Brands,
     Productcolor,
     Productsizes,
-    Images
+    Images,
+    Details
 } = require('../../models');
 const catchAsync = require('../../utils/catchAsync');
 const AppError = require('../../utils/appError');
-const fieldsForPublic = [
-    'id',
-    'product_id',
-    'name_tm',
-    'name_ru',
-    'body_tm',
-    'body_ru',
-    'price',
-    'image',
-    'discount',
-    'price_old',
-];
 exports.getProducts = catchAsync(async(req, res) => {
     const limit = req.query.limit || 10;
     const { offset } = req.query;
@@ -32,7 +20,15 @@ exports.getProducts = catchAsync(async(req, res) => {
         order,
         limit,
         offset,
-        include,
+        include: [{
+                model: Images,
+                as: "images"
+            },
+            {
+                model: Productsizes,
+                as: "product_sizes",
+            }
+        ],
         where
     });
     return res.status(200).json(products);
@@ -45,8 +41,13 @@ exports.getTopProducts = catchAsync(async(req, res) => {
         isActive: true,
         limit,
         offset,
-        include,
-
+        order: [
+            ["sold_count", "DESC"]
+        ],
+        include: {
+            model: Images,
+            as: "images"
+        },
     });
     return res.status(200).json(products);
 });
@@ -61,7 +62,11 @@ exports.getLikedProducts = catchAsync(async(req, res) => {
         ],
         limit,
         offset,
-        where
+        where,
+        include: {
+            model: Images,
+            as: "images"
+        },
     });
     return res.status(200).json(products);
 });
@@ -154,6 +159,10 @@ exports.getOneProduct = catchAsync(async(req, res, next) => {
             {
                 model: Images,
                 as: "images"
+            },
+            {
+                model: Details,
+                as: "details"
             }
         ]
     })

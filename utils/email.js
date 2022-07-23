@@ -1,17 +1,19 @@
 const nodemailer = require('nodemailer');
 exports.sendEmail = async(options) => {
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.mail.ru',
+        port: 465,
+        secure: true,
         auth: {
-            user: 'rustamsadatov@gmail.com',
-            pass: 'kuwat2009',
+            user: 'rsadatow@bk.ru',
+            pass: 'LSdd7rKzR0xuRqPSeT4A',
         },
     });
     const mailOptions = {
-        from: `Contact-Us <rustamsadatov@gmail.com>`,
-        to: 'ibragimowserdar22@gmail.com',
-        subject: 'Biri "Dowrebap" administratsiýasy bilen habarlaşmak isleýär',
-        text: `ADY: ${options.name},\n\nTELEFON/EMAIL: ${options.email},\n\nHATY: ${options.text}`,
+        from: `Contact-Us <rsadatow@bk.ru>`,
+        to: 'rustamsadatov0@gmail.com',
+        subject: 'Biri "E-commerce" administratsiýasy bilen habarlaşmak isleýär',
+        text: `ADY: ${options.name},\n\n EMAIL: ${options.email}, \n\n TELEFON: ${options.phone},\n\nHATY: ${options.text}`,
     };
     await transporter.sendMail(mailOptions);
 };
